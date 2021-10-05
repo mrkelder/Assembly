@@ -1,69 +1,60 @@
-;Следующие три строки это директивы ассемблера, 
-;которые можно не задавать, т.к.работаем в Visual Studio. 
-;Символ ";" - это начало однострочного комментария
-
-;.686                 ;Система команд процессора 686       
+   
 .MODEL FLAT,stdcall  ;Модель памяти плоская, стандартный
-                      ;вызов процедуры
-;option casemap:none  ;Режим при котором заглавные и
-                      ;строчные буквы не различаются
-
-comment * --- Это многострочный комментарий
-	Условие задачи:Вычислить арифметические выражения для x и y. 
-	Вычисления в байтах. *---- 
-
-;.XLIST
-	;include \masm32\include\masm32rt.inc
-	    ;	Обеспечивает подключение всех необходимых функций 
-	    ;	и макросов.	
 
 .LIST ; Директивы .XLIST и .LIST обеспечивают правильное
       ; формирование листинга программы
-.DATA ; Директива описания начала раздела инициализированных данных. 
-	a   dw   -1
-	b   dw    -2
-	c1  dw    32
+.DATA
+	a  dw  20
+	b  dw  20
 
 .DATA? ;Директива описания начала раздела неинициализированных данных. 
-	x   dw    ?
 	y   dw    ?
 
 .CODE   ;Директива описания начала сегмента кода. 
-lab1:   ;Это метка, в нашей программе определяет точку
-			  ;входа - стартовый адрес
-         
-;Вычисляем x
-	mov ax, 2	;ax=2
-	imul c1		;ax=c^2
-	imul c1		;ax=2c^2
-	mov bx, ax	;bx=2c^2
-	mov ax, c1	;ax=c
-	imul b		;ax=bc
-	sub bx, ax	;ax=2c^2-bc
-	mov ax, 8	;ax=8
-	imul a		;ax=8b
-	imul b		;ax=8ab
-	sub ax, c1	;ax=8ab-c
-	xchg ax, bx	;ax=2c^2-bc bx=8ab-c
-	cwd
-	idiv bx
-	mov x, ax ;x -132
+lab2:   ;Это метка, в нашей программе определяет точку
+	mov ax, 9	;ax=9
+	imul b		;ax=9b
+	mov bx, ax	;bx=9b
+	mov ax,5	;ax=5
+	imul a		;ax=5a
+	sub bx, ax	;bx=9b-5a
+	
+	cmp bx, 4
 
-;Вычисляем y
-	mov bx, 3	;bx=3
-	imul ax		;ax=x^2
-	sub bx, ax	;bx=3-x^2
-	sub bx, c1	;bx=3-X^2-c
+	jl	m1		;9b-5a<4
+	je	m2		;9b-5a=4
+	jg	m3		;9b-5a>4
+
+m1:
+	;y=b^2+a^2
 	mov ax, b	;ax=b
-	imul a		;ax=ba
-	mov si, x	;si=x
-	shl si, 1	;sl=2x
-	sub ax, si	;ax=ba-2x
-	xchg ax, bx ;ax=-17453 bx=266
-	cwd
-	idiv bx
-	mov y, ax ;y=-65
+	imul b		;ax=b^2
+	mov bx, ax	;bx=b^2
+	mov ax, a	;ax=a
+	imul a		;ax=a^2
+	add bx, ax	;bx=b^2+a^2
+	mov y, bx	;y=b^2+a^2
+	jmp m_end
+m2:
+	;y=a-12
+	mov ax, 12	;ax=12
+	mov bx, a	;bx=a
+	sub	bx, ax	;bx=a-12
+	mov y, bx	;y=a-12
+	jmp  m_end
+m3:
+	;y=|a|-3*|b|
+	mov ax, a	;ax=a
+	cmp ax, 0
+	jl a_less
+	je a_pos
+	jg a_pos
+a_less:
+	neg ax		;ax=|a|
+a_pos:
 
+m_end:
+	;mov  x,ax    ;Занесение результата в поле переменной Х
 ret  ;это макрос, который вызывает функцию ExitProcess, которая
 	    ;возвращает управление операционоой системе
-end	lab1  ;Это директива ассемблера - определяет точку входа.
+end	lab2  ;Это директива ассемблера - определяет точку входа.
