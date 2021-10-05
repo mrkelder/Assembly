@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.29.30133.0	    10/05/21 09:49:24
+Microsoft (R) Macro Assembler Version 14.29.30133.0	    10/05/21 10:25:33
 Lab.asm							     Page 1 - 1
 
 
@@ -28,41 +28,62 @@ Lab.asm							     Page 1 - 1
  0000001C  66| 83 FB 04			cmp bx, 4
 
  00000020  7C 04			jl	m1		;9b-5a<4
- 00000022  74 02			je	m2		;9b-5a=4
- 00000024  7F 00			jg	m3		;9b-5a>4
+ 00000022  74 2B			je	m2		;9b-5a=4
+ 00000024  7F 40			jg	m3		;9b-5a>4
 
  00000026			m1:
-					;mov 
-					;mov  ax,3    ;ax=3	
-					;imul b       ;ax=b*3
-					;add  ax,a    ;ax=ax+а=а+b*3
-					;cmp  ax,40   ;Сравнение b*3+a числом 40
-					;je   m2      ;Переход,если равно
-					;jg   m3      ;Переход если больше
-				;Вычисление по первой ветви, если меньше
-					;mov  ax,a    ;ax=a;
-					;imul b       ;ax=a*b
-					;sub  ax,36   ;ax=a*b-36
-					;neg  ax      ;ax=-(a*b-36)=36-a*b
-					;jmp  near ptr m_end   ;Переход на конец
- 00000026			m2:
-				;Вычисление по второй ветви, если равно
-					;mov  ax,a    ;ax=a
-					;cwd          ;ax->(dx:ax), расширяем слово до 
-					             ;                двойного слова
-					;idiv b       ;ax=a/b
-					;dec  ax      ;ax=a/b-1
-					;jmp  m_end   ;Переход на конец
- 00000026			m3:
-				;Вычисление по третьей ветви, если больше
-					;mov  ax,b    ;ax=b
-					;cwd          ;ax->(dx:ax), расширяем слово до 
-					             ;                двойного слова
-					;idiv a       ;ax=b/a
-					;sub  ax,6    ;ax=b/a-6
-					;neg  ax      ;ax=-(b/a-6)=6-b/a
- 00000026			m_end:
+					;y=b^2+a^2
+ 00000026  66| A1			mov ax, b	;ax=b
+	   00000002 R
+ 0000002C  66| F7 2D			imul b		;ax=b^2
+	   00000002 R
+ 00000033  66| 8B D8			mov bx, ax	;bx=b^2
+ 00000036  66| A1			mov ax, a	;ax=a
+	   00000000 R
+ 0000003C  66| F7 2D			imul a		;ax=a^2
+	   00000000 R
+ 00000043  66| 03 D8			add bx, ax	;bx=b^2+a^2
+ 00000046  66| 89 1D			mov y, bx	;y=b^2+a^2
+	   00000000 R
+ 0000004D  EB 51			jmp m_end
+ 0000004F			m2:
+					;y=a-12
+ 0000004F  66| B8 000C			mov ax, 12	;ax=12
+ 00000053  66| 8B 1D			mov bx, a	;bx=a
+	   00000000 R
+ 0000005A  66| 2B D8			sub	bx, ax	;bx=a-12
+ 0000005D  66| 89 1D			mov y, bx	;y=a-12
+	   00000000 R
+ 00000064  EB 3A			jmp  m_end
+ 00000066			m3:
+					;y=|a|-3*|b|
+ 00000066  66| A1			mov ax, a	;ax=a
+	   00000000 R
+ 0000006C  66| 83 F8 00			cmp ax, 0
+ 00000070  7C 04			jl a_less
+ 00000072  74 05			je a_pos
+ 00000074  7F 03			jg a_pos
+ 00000076			a_less:
+ 00000076  66| F7 D8			neg ax		;ax=|a|
+ 00000079			a_pos:
+ 00000079  66| 8B D8			mov bx,ax	;bx=|a|
+ 0000007C  66| A1			mov ax, b	;ax=b
+	   00000002 R
+ 00000082  66| 83 F8 00			cmp ax, 0
+ 00000086  7C 04			jl b_less
+ 00000088  74 05			je b_pos
+ 0000008A  7F 03			jg b_pos
+ 0000008C			b_less:
+ 0000008C  66| F7 D8			neg ax		;ax=|b|
+ 0000008F			b_pos:
+ 0000008F  66| BE 0003			mov si, 3	;si=3
+ 00000093  66| F7 EE			imul si		;ax=3*|b|
+ 00000096  66| 2B D8			sub bx, ax	;bx=|a|-3*|b|
+ 00000099  66| 89 1D			mov y, bx	;y=|a|-3*|b|
+	   00000000 R
+
+ 000000A0			m_end:
 					;mov  x,ax    ;Занесение результата в поле переменной Х
- 00000026  C3			ret  ;это макрос, который вызывает функцию ExitProcess, которая
+ 000000A0  C3			ret  ;это макрос, который вызывает функцию ExitProcess, которая
 					    ;возвращает управление операционоой системе
 				end	lab2  ;Это директива ассемблера - определяет точку входа.

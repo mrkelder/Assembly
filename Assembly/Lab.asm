@@ -52,6 +52,19 @@ m3:
 a_less:
 	neg ax		;ax=|a|
 a_pos:
+	mov bx,ax	;bx=|a|
+	mov ax, b	;ax=b
+	cmp ax, 0
+	jl b_less
+	je b_pos
+	jg b_pos
+b_less:
+	neg ax		;ax=|b|
+b_pos:
+	mov si, 3	;si=3
+	imul si		;ax=3*|b|
+	sub bx, ax	;bx=|a|-3*|b|
+	mov y, bx	;y=|a|-3*|b|
 
 m_end:
 	;mov  x,ax    ;Занесение результата в поле переменной Х
