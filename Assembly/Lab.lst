@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.29.30133.0	    10/12/21 13:05:05
+Microsoft (R) Macro Assembler Version 14.29.30133.0	    10/12/21 13:27:03
 Lab.asm							     Page 1 - 1
 
 
@@ -43,40 +43,38 @@ Lab.asm							     Page 1 - 1
  0000002F  F6 2D 00000000 R		imul a		;al=a^2
  00000035  02 D8			add bl, al	;bl=b^2+a^2
  00000037  88 1D 00000000 R		mov y, bl	;y=b^2+a^2
- 0000003D  EB 3E			jmp m_end
+ 0000003D  EB 3A			jmp m_end
  0000003F			m2:
 					;y=a-12
  0000003F  B0 0C			mov al, 12	;al=12
  00000041  8A 1D 00000000 R		mov bl, a	;bl=a
  00000047  2A D8			sub	bl, al	;bl=a-12
  00000049  88 1D 00000000 R		mov y, bl	;y=a-12
- 0000004F  EB 2C			jmp  m_end
+ 0000004F  EB 28			jmp  m_end
  00000051			m3:
 					;y=|a|-3*|b|
  00000051  A0 00000000 R		mov al, a	;al=a
  00000056  3C 00			cmp al, 0
- 00000058  7C 04			jl a_less
- 0000005A  74 04			je a_pos
- 0000005C  7F 02			jg a_pos
- 0000005E			a_less:
- 0000005E  F6 D8			neg al		;al=|a|
- 00000060			a_pos:
- 00000060  8A D8			mov bl,al	;bl=|a|
- 00000062  A0 00000001 R		mov al, b	;al=b
- 00000067  3C 00			cmp al, 0
- 00000069  7C 04			jl b_less
- 0000006B  74 04			je b_pos
- 0000006D  7F 02			jg b_pos
- 0000006F			b_less:
- 0000006F  F6 D8			neg al		;al=|b|
- 00000071			b_pos:
- 00000071  B1 03			mov cl, 3	;cl=3
- 00000073  F6 E9			imul cl		;al=3*|b|
- 00000075  2A DB			sub bl, bl	;bl=|a|-3*|b|
- 00000077  88 1D 00000000 R		mov y, bl	;y=|a|-3*|b|
+ 00000058  7C 02			jl a_less
+ 0000005A  7D 02			jge a_pos
+ 0000005C			a_less:
+ 0000005C  F6 D8			neg al		;al=|a|
+ 0000005E			a_pos:
+ 0000005E  8A D8			mov bl,al	;bl=|a|
+ 00000060  A0 00000001 R		mov al, b	;al=b
+ 00000065  3C 00			cmp al, 0
+ 00000067  7C 02			jl b_less
+ 00000069  7D 02			jge b_pos
+ 0000006B			b_less:
+ 0000006B  F6 D8			neg al		;al=|b|
+ 0000006D			b_pos:
+ 0000006D  B1 03			mov cl, 3	;cl=3
+ 0000006F  F6 E9			imul cl		;al=3*|b|
+ 00000071  2A DB			sub bl, bl	;bl=|a|-3*|b|
+ 00000073  88 1D 00000000 R		mov y, bl	;y=|a|-3*|b|
 
- 0000007D			m_end:
+ 00000079			m_end:
 
- 0000007D  C3			ret 
+ 00000079  C3			ret 
 
 				end	lab2  

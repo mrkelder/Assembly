@@ -52,8 +52,7 @@ m3:
 	mov al, a	;al=a
 	cmp al, 0
 	jl a_less
-	je a_pos
-	jg a_pos
+	jge a_pos
 a_less:
 	neg al		;al=|a|
 a_pos:
@@ -61,8 +60,7 @@ a_pos:
 	mov al, b	;al=b
 	cmp al, 0
 	jl b_less
-	je b_pos
-	jg b_pos
+	jge b_pos
 b_less:
 	neg al		;al=|b|
 b_pos:
