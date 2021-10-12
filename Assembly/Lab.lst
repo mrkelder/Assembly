@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.29.30133.0	    10/11/21 17:58:53
+Microsoft (R) Macro Assembler Version 14.29.30133.0	    10/12/21 13:05:05
 Lab.asm							     Page 1 - 1
 
 
@@ -13,7 +13,7 @@ Lab.asm							     Page 1 - 1
 				.LIST ; Директивы .XLIST и .LIST обеспечивают правильное
 				      ; формирование листинга программы
  00000000			.DATA
- 00000000 04				a  db  4
+ 00000000 01				a  db  1
  00000001 01				b  db  1
 
  00000000			.DATA? ;Директива описания начала раздела неинициализированных данных. 
@@ -21,62 +21,62 @@ Lab.asm							     Page 1 - 1
 
  00000000			.CODE   ;Директива описания начала сегмента кода. 
  00000000			lab2:   ;Это метка, в нашей программе определяет точку
- 00000000  B4 09			mov ah, 9	;ax=9
- 00000002  F6 2D 00000001 R		imul b		;ax=9b
- 00000008  8A FC			mov bh, ah	;bx=9b
- 0000000A  B4 05			mov ah,5	;ax=5
- 0000000C  F6 2D 00000000 R		imul a		;ax=5a
- 00000012  2A FC			sub bh, ah	;bx=9b-5a
+ 00000000  B0 09			mov al, 9	;al=9
+ 00000002  F6 2D 00000001 R		imul b		;al=9b
+ 00000008  8A D8			mov bl, al	;bl=9b
+ 0000000A  B0 05			mov al,5	;al=5
+ 0000000C  F6 2D 00000000 R		imul a		;al=5a
+ 00000012  2A D8			sub bl, al	;bl=9b-5a
 					
- 00000014  80 FF 04			cmp bh, 4
+ 00000014  80 FB 04			cmp bl, 4
 
  00000017  7C 04			jl	m1		;9b-5a<4
- 00000019  74 26			je	m2		;9b-5a=4
- 0000001B  7F 36			jg	m3		;9b-5a>4
+ 00000019  74 24			je	m2		;9b-5a=4
+ 0000001B  7F 34			jg	m3		;9b-5a>4
 
  0000001D			m1:
 					;y=b^2+a^2
- 0000001D  8A 3D 00000001 R		mov bh, b	;ax=b
- 00000023  F6 2D 00000001 R		imul b		;ax=b^2
- 00000029  8A FC			mov bh, ah	;bx=b^2
- 0000002B  8A 25 00000000 R		mov ah, a	;ax=a
- 00000031  F6 2D 00000000 R		imul a		;ax=a^2
- 00000037  02 FC			add bh, ah	;bx=b^2+a^2
- 00000039  88 3D 00000000 R		mov y, bh	;y=b^2+a^2
- 0000003F  EB 42			jmp m_end
- 00000041			m2:
+ 0000001D  A0 00000001 R		mov al, b	;al=b
+ 00000022  F6 2D 00000001 R		imul b		;al=b^2
+ 00000028  8A D8			mov bl, al	;bl=b^2
+ 0000002A  A0 00000000 R		mov al, a	;al=a
+ 0000002F  F6 2D 00000000 R		imul a		;al=a^2
+ 00000035  02 D8			add bl, al	;bl=b^2+a^2
+ 00000037  88 1D 00000000 R		mov y, bl	;y=b^2+a^2
+ 0000003D  EB 3E			jmp m_end
+ 0000003F			m2:
 					;y=a-12
- 00000041  B4 0C			mov ah, 12	;ax=12
- 00000043  8A 3D 00000000 R		mov bh, a	;bx=a
- 00000049  2A FC			sub	bh, ah	;bx=a-12
- 0000004B  88 3D 00000000 R		mov y, bh	;y=a-12
- 00000051  EB 30			jmp  m_end
- 00000053			m3:
+ 0000003F  B0 0C			mov al, 12	;al=12
+ 00000041  8A 1D 00000000 R		mov bl, a	;bl=a
+ 00000047  2A D8			sub	bl, al	;bl=a-12
+ 00000049  88 1D 00000000 R		mov y, bl	;y=a-12
+ 0000004F  EB 2C			jmp  m_end
+ 00000051			m3:
 					;y=|a|-3*|b|
- 00000053  8A 25 00000000 R		mov ah, a	;ax=a
- 00000059  80 FC 00			cmp ah, 0
- 0000005C  7C 04			jl a_less
- 0000005E  74 04			je a_pos
- 00000060  7F 02			jg a_pos
- 00000062			a_less:
- 00000062  F6 DC			neg ah		;ax=|a|
- 00000064			a_pos:
- 00000064  8A FC			mov bh,ah	;bx=|a|
- 00000066  8A 25 00000001 R		mov ah, b	;ax=b
- 0000006C  80 FC 00			cmp ah, 0
- 0000006F  7C 04			jl b_less
- 00000071  74 04			je b_pos
- 00000073  7F 02			jg b_pos
- 00000075			b_less:
- 00000075  F6 DC			neg ah		;ax=|b|
- 00000077			b_pos:
- 00000077  B5 03			mov ch, 3	;si=3
- 00000079  F6 ED			imul ch		;ax=3*|b|
- 0000007B  2A FF			sub bh, bh	;bx=|a|-3*|b|
- 0000007D  88 3D 00000000 R		mov y, bh	;y=|a|-3*|b|
+ 00000051  A0 00000000 R		mov al, a	;al=a
+ 00000056  3C 00			cmp al, 0
+ 00000058  7C 04			jl a_less
+ 0000005A  74 04			je a_pos
+ 0000005C  7F 02			jg a_pos
+ 0000005E			a_less:
+ 0000005E  F6 D8			neg al		;al=|a|
+ 00000060			a_pos:
+ 00000060  8A D8			mov bl,al	;bl=|a|
+ 00000062  A0 00000001 R		mov al, b	;al=b
+ 00000067  3C 00			cmp al, 0
+ 00000069  7C 04			jl b_less
+ 0000006B  74 04			je b_pos
+ 0000006D  7F 02			jg b_pos
+ 0000006F			b_less:
+ 0000006F  F6 D8			neg al		;al=|b|
+ 00000071			b_pos:
+ 00000071  B1 03			mov cl, 3	;cl=3
+ 00000073  F6 E9			imul cl		;al=3*|b|
+ 00000075  2A DB			sub bl, bl	;bl=|a|-3*|b|
+ 00000077  88 1D 00000000 R		mov y, bl	;y=|a|-3*|b|
 
- 00000083			m_end:
-					;mov  x,ax    ;Занесение результата в поле переменной Х
- 00000083  C3			ret  ;это макрос, который вызывает функцию ExitProcess, которая
-					    ;возвращает управление операционоой системе
-				end	lab2  ;Это директива ассемблера - определяет точку входа.
+ 0000007D			m_end:
+
+ 0000007D  C3			ret 
+
+				end	lab2  

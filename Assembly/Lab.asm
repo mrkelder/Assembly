@@ -9,7 +9,7 @@
 .LIST ; Директивы .XLIST и .LIST обеспечивают правильное
       ; формирование листинга программы
 .DATA
-	a  db  4
+	a  db  1
 	b  db  1
 
 .DATA? ;Директива описания начала раздела неинициализированных данных. 
@@ -17,14 +17,14 @@
 
 .CODE   ;Директива описания начала сегмента кода. 
 lab2:   ;Это метка, в нашей программе определяет точку
-	mov ah, 9	;ax=9
-	imul b		;ax=9b
-	mov bh, ah	;bx=9b
-	mov ah,5	;ax=5
-	imul a		;ax=5a
-	sub bh, ah	;bx=9b-5a
+	mov al, 9	;al=9
+	imul b		;al=9b
+	mov bl, al	;bl=9b
+	mov al,5	;al=5
+	imul a		;al=5a
+	sub bl, al	;bl=9b-5a
 	
-	cmp bh, 4
+	cmp bl, 4
 
 	jl	m1		;9b-5a<4
 	je	m2		;9b-5a=4
@@ -32,47 +32,47 @@ lab2:   ;Это метка, в нашей программе определяет точку
 
 m1:
 	;y=b^2+a^2
-	mov bh, b	;ax=b
-	imul b		;ax=b^2
-	mov bh, ah	;bx=b^2
-	mov ah, a	;ax=a
-	imul a		;ax=a^2
-	add bh, ah	;bx=b^2+a^2
-	mov y, bh	;y=b^2+a^2
+	mov al, b	;al=b
+	imul b		;al=b^2
+	mov bl, al	;bl=b^2
+	mov al, a	;al=a
+	imul a		;al=a^2
+	add bl, al	;bl=b^2+a^2
+	mov y, bl	;y=b^2+a^2
 	jmp m_end
 m2:
 	;y=a-12
-	mov ah, 12	;ax=12
-	mov bh, a	;bx=a
-	sub	bh, ah	;bx=a-12
-	mov y, bh	;y=a-12
+	mov al, 12	;al=12
+	mov bl, a	;bl=a
+	sub	bl, al	;bl=a-12
+	mov y, bl	;y=a-12
 	jmp  m_end
 m3:
 	;y=|a|-3*|b|
-	mov ah, a	;ax=a
-	cmp ah, 0
+	mov al, a	;al=a
+	cmp al, 0
 	jl a_less
 	je a_pos
 	jg a_pos
 a_less:
-	neg ah		;ax=|a|
+	neg al		;al=|a|
 a_pos:
-	mov bh,ah	;bx=|a|
-	mov ah, b	;ax=b
-	cmp ah, 0
+	mov bl,al	;bl=|a|
+	mov al, b	;al=b
+	cmp al, 0
 	jl b_less
 	je b_pos
 	jg b_pos
 b_less:
-	neg ah		;ax=|b|
+	neg al		;al=|b|
 b_pos:
-	mov ch, 3	;si=3
-	imul ch		;ax=3*|b|
-	sub bh, bh	;bx=|a|-3*|b|
-	mov y, bh	;y=|a|-3*|b|
+	mov cl, 3	;cl=3
+	imul cl		;al=3*|b|
+	sub bl, bl	;bl=|a|-3*|b|
+	mov y, bl	;y=|a|-3*|b|
 
 m_end:
-	;mov  x,ax    ;Занесение результата в поле переменной Х
-ret  ;это макрос, который вызывает функцию ExitProcess, которая
-	    ;возвращает управление операционоой системе
-end	lab2  ;Это директива ассемблера - определяет точку входа.
+
+ret 
+
+end	lab2  
