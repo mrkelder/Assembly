@@ -1,76 +1,63 @@
    
-.MODEL FLAT,stdcall  ;Модель памяти плоская, стандартный
+.MODEL FLAT,stdcall
 
-;   Условие задачи,используем формат байта
-;       / b^2+a^2  , если 9b-5a<4;   a=4,   b=1,  y=17	(-11<4)
-;    Y=|  a-12     , если 9b-5a=4;   a=1,	b=1,  y=-11	(4=4)
-;       \ |a|-3*|b|, если 9b-5a>4;   a=-5,  b=-2, y=-1	(7>4)
+; Определить среднее арифметическое четных элементов массива, расположенных на четных позициях.
 
-.LIST ; Директивы .XLIST и .LIST обеспечивают правильное
-      ; формирование листинга программы
+.LIST
+  
 .DATA
-	a  db  1
-	b  db  1
+	x		dd		2, 1, 4, 4, 8, 5, 1, 7, 3, 9
+	nx		dd		10
+	cEl		dd		0 ; кол-во подходящих по условию елементов
+	cElSum	dd		0 ; сумма подходящих по условию елементов
+	const	dd		2
 
-.DATA? ;Директива описания начала раздела неинициализированных данных. 
-	y   db    ?
+.DATA?
+	result   dd    ?
 
-.CODE   ;Директива описания начала сегмента кода. 
-lab2:   ;Это метка, в нашей программе определяет точку
-	mov al, 9	;al=9
-	imul b		;al=9b
-	mov bl, al	;bl=9b
-	mov al,5	;al=5
-	imul a		;al=5a
-	sub bl, al	;bl=9b-5a
-	
-	cmp bl, 4
+.CODE 
+lab3:
+	mov edi, 0		; 'индекс' массива
 
-	jl	m1		;9b-5a<4
-	je	m2		;9b-5a=4
-	jg	m3		;9b-5a>4
+	mov eax, nx
+	cdq
+	idiv const
 
-m1:
-	;y=b^2+a^2
-	mov al, b	;al=b
-	imul b		;al=b^2
-	mov bl, al	;bl=b^2
-	mov al, a	;al=a
-	imul a		;al=a^2
-	add bl, al	;bl=b^2+a^2
-	mov y, bl	;y=b^2+a^2
-	jmp m_end
-m2:
-	;y=a-12
-	mov al, 12	;al=12
-	mov bl, a	;bl=a
-	sub	bl, al	;bl=a-12
-	mov y, bl	;y=a-12
-	jmp  m_end
-m3:
-	;y=|a|-3*|b|
-	mov al, a	;al=a
-	cmp al, 0
-	jl a_less
-	jge a_pos
-a_less:
-	neg al		;al=|a|
-a_pos:
-	mov bl,al	;bl=|a|
-	mov al, b	;al=b
-	cmp al, 0
-	jl b_less
-	jge b_pos
-b_less:
-	neg al		;al=|b|
-b_pos:
-	mov cl, 3	;cl=3
-	imul cl		;al=3*|b|
-	sub bl, bl	;bl=|a|-3*|b|
-	mov y, bl	;y=|a|-3*|b|
+	mov ecx, eax	; сколько раз будет просмотрен массив
+	cmp edx, 0
 
-m_end:
+	je c1			; если edx не равен нулю, то нужно прибавить еще одну итерацию
+	inc ecx
+c1:
+					; итерация
+	mov eax, x[edi]	; заносим итерируемый элемент в массив
 
-ret 
+	cdq
+	idiv const
 
-end	lab2  
+	cmp edx, 0		; проверяем элемент на четность
+
+	jne c2			; если число нечетное, игнорируем его
+	mov eax, x[edi]
+	inc cEl
+	add cElSum, eax
+c2:
+	add edi, 8		; просматриваем элементы массива через один (только четные индексы)
+	loop c1
+
+	cmp cEl, 0		; проверка, не является ли cEl нулем
+
+	jne c3
+	je c4
+c3:
+	mov eax, cElSum
+	mov ebx, cEl
+	cdq
+	idiv ebx
+	mov result, eax
+	ret
+c4:
+	mov result, 0
+	ret
+
+end	lab3  
