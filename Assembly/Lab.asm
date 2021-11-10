@@ -6,20 +6,45 @@
 .LIST
   
 .DATA
-	x		dd		2, 1, 4, 4, 8, 5, 1, 7, 3, 9
+	x		dd		2, 1, 2, 4, 2, 5, 1, 7, 3, 9
+	y		dd		2, 3, 4, 5
 	nx		dd		10
+	ny		dd		4
 	cEl		dd		0 ; кол-во подходящих по условию елементов
 	cElSum	dd		0 ; сумма подходящих по условию елементов
 	const	dd		2
 
 .DATA?
-	result   dd    ?
+	result   dd    ? ; удалить
+	resultX   dd    ?
+	resultY   dd    ?
 
 .CODE 
 lab3:
-	mov edi, 0		; 'индекс' массива
 
-	mov eax, nx
+
+	mov edi, 0		; 'индекс' массива
+	lea ebx, x
+	lea esi, nx
+	call func
+
+	mov eax, result
+
+	mov cEl, 0		; возвращаем элементы к исходным данным
+	mov cElSum, 0
+	mov edi, 0
+
+	lea ebx, y
+	lea esi, ny
+	call func
+
+	mov eax, result
+	ret
+
+func proc
+	; [ebx] - массив
+	; [esi] - длина
+	mov eax, [esi]
 	cdq
 	idiv const
 
@@ -28,17 +53,16 @@ lab3:
 
 	je c1			; если edx не равен нулю, то нужно прибавить еще одну итерацию
 	inc ecx
+	ret
 c1:
-					; итерация
-	mov eax, x[edi]	; заносим итерируемый элемент в массив
-
+	mov eax, [ebx+edi]	; заносим итерируемый элемент в массив
 	cdq
 	idiv const
 
 	cmp edx, 0		; проверяем элемент на четность
 
 	jne c2			; если число нечетное, игнорируем его
-	mov eax, x[edi]
+	mov eax, [ebx+edi]
 	inc cEl
 	add cElSum, eax
 c2:
@@ -59,5 +83,6 @@ c3:
 c4:
 	mov result, 0
 	ret
+func endp
 
 end	lab3  
