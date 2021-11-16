@@ -15,9 +15,7 @@
 	const	dd		2
 
 .DATA?
-	result   dd    ? ; удалить
-	resultX   dd    ?
-	resultY   dd    ?
+	result   dd    ?
 
 .CODE 
 lab3:
