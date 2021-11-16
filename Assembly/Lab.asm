@@ -22,7 +22,6 @@
 .CODE 
 lab3:
 
-
 	mov edi, 0		; 'индекс' массива
 	lea ebx, x
 	lea esi, nx
@@ -44,24 +43,15 @@ lab3:
 func proc
 	; [ebx] - массив
 	; [esi] - длина
-	mov eax, [esi]
-	cdq
-	idiv const
-
-	mov ecx, eax	; сколько раз будет просмотрен массив
-	cmp edx, 0
-
-	je c1			; если edx не равен нулю, то нужно прибавить еще одну итерацию
+	mov ecx, [esi]
+	shr ecx, 1
+	jnc c1
 	inc ecx
-	ret
 c1:
-	mov eax, [ebx+edi]	; заносим итерируемый элемент в массив
-	cdq
-	idiv const
+	mov eax, [ebx+edi] ; без такой конструкции не работает
+	shr eax, 1
+	jc c2
 
-	cmp edx, 0		; проверяем элемент на четность
-
-	jne c2			; если число нечетное, игнорируем его
 	mov eax, [ebx+edi]
 	inc cEl
 	add cElSum, eax
