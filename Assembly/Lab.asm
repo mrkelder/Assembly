@@ -7,7 +7,7 @@
   
 .DATA
 	x		dd		2, 1, 2, 4, 2, 5, 1, 7, 3, 9
-	y		dd		2, 3, 4, 5
+	y		dd		4, 3, 8, 5
 	nx		dd		10
 	ny		dd		4
 	cEl		dd		0 ; кол-во подходящих по условию елементов
@@ -20,41 +20,47 @@
 .CODE 
 lab3:
 
-	mov edi, 0		; 'индекс' массива
-	lea ebx, x
-	lea esi, nx
+	push offset x
+	push nx
 	call func
 
 	mov eax, result
 
-	mov cEl, 0		; возвращаем элементы к исходным данным
-	mov cElSum, 0
-	mov edi, 0
-
-	lea ebx, y
-	lea esi, ny
+	push offset y
+	push ny
 	call func
 
 	mov eax, result
 	ret
 
 func proc
-	; [ebx] - массив
-	; [esi] - длина
-	mov ecx, [esi]
+	mov cEl, 0
+	mov cElSum, 0
+
+	push ebp
+	mov ebp, esp
+	push  eax          ;сохраняем используемые регистры
+	push  ebx
+	push  ecx
+	push  edi
+	push  esi
+
+
+	mov ecx, [ebp+8]
+	mov ebx, [ebp+12] ; ebx - указатель на нулевой элемент массива
 	shr ecx, 1
 	jnc c1
 	inc ecx
 c1:
-	mov eax, [ebx+edi] ; без такой конструкции не работает
+	mov eax, [ebx] ; eax - данный элемент итерации
 	shr eax, 1
 	jc c2
 
-	mov eax, [ebx+edi]
+	mov eax, [ebx]
 	inc cEl
 	add cElSum, eax
 c2:
-	add edi, 8		; просматриваем элементы массива через один (только четные индексы)
+	add ebx, 8		; просматриваем элементы массива через один (только четные индексы)
 	loop c1
 
 	cmp cEl, 0		; проверка, не является ли cEl нулем
@@ -67,10 +73,22 @@ c3:
 	cdq
 	idiv ebx
 	mov result, eax
-	ret
+	pop   esi         ;восстанавливаем используемые регистры
+	pop   edi
+	pop   ecx
+	pop   ebx
+	pop   eax
+	pop   ebp
+	ret 8
 c4:
 	mov result, 0
-	ret
+	pop   esi         ;восстанавливаем используемые регистры
+	pop   edi
+	pop   ecx
+	pop   ebx
+	pop   eax
+	pop   ebp
+	ret 8
 func endp
 
 end	lab3  

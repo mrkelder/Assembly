@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.29.30133.0	    11/16/21 13:38:11
+Microsoft (R) Macro Assembler Version 14.29.30133.0	    11/29/21 16:55:18
 Lab.asm							     Page 1 - 1
 
 
@@ -20,9 +20,9 @@ Lab.asm							     Page 1 - 1
 	   00000007
 	   00000003
 	   00000009
- 00000028 00000002			y		dd		2, 3, 4, 5
+ 00000028 00000004			y		dd		4, 3, 8, 5
 	   00000003
-	   00000004
+	   00000008
 	   00000005
  00000038 0000000A			nx		dd		10
  0000003C 00000004			ny		dd		4
@@ -31,68 +31,84 @@ Lab.asm							     Page 1 - 1
  00000048 00000002			const	dd		2
 
  00000000			.DATA?
- 00000000 00000000			result   dd    ? ; удалить
- 00000004 00000000			resultX   dd    ?
- 00000008 00000000			resultY   dd    ?
+ 00000000 00000000			result   dd    ?
 
  00000000			.CODE 
  00000000			lab3:
 
- 00000000  BF 00000000			mov edi, 0		; 'индекс' массива
- 00000005  8D 1D 00000000 R		lea ebx, x
- 0000000B  8D 35 00000038 R		lea esi, nx
- 00000011  E8 00000035			call func
+ 00000000  68 00000000 R		push offset x
+ 00000005  FF 35 00000038 R		push nx
+ 0000000B  E8 0000001B			call func
 
- 00000016  A1 00000000 R		mov eax, result
+ 00000010  A1 00000000 R		mov eax, result
 
- 0000001B  C7 05 00000040 R		mov cEl, 0		; возвращаем элементы к исходным данным
+ 00000015  68 00000028 R		push offset y
+ 0000001A  FF 35 0000003C R		push ny
+ 00000020  E8 00000006			call func
+
+ 00000025  A1 00000000 R		mov eax, result
+ 0000002A  C3				ret
+
+ 0000002B			func proc
+ 0000002B  C7 05 00000040 R		mov cEl, 0
 	   00000000
- 00000025  C7 05 00000044 R		mov cElSum, 0
+ 00000035  C7 05 00000044 R		mov cElSum, 0
 	   00000000
- 0000002F  BF 00000000			mov edi, 0
 
- 00000034  8D 1D 00000028 R		lea ebx, y
- 0000003A  8D 35 0000003C R		lea esi, ny
- 00000040  E8 00000006			call func
+ 0000003F  55				push ebp
+ 00000040  8B EC			mov ebp, esp
+ 00000042  50				push  eax          ;сохраняем используемые регистры
+ 00000043  53				push  ebx
+ 00000044  51				push  ecx
+ 00000045  57				push  edi
+ 00000046  56				push  esi
 
- 00000045  A1 00000000 R		mov eax, result
- 0000004A  C3				ret
 
- 0000004B			func proc
-					; [ebx] - массив
-					; [esi] - длина
- 0000004B  8B 0E			mov ecx, [esi]
+ 00000047  8B 4D 08			mov ecx, [ebp+8]
+ 0000004A  8B 5D 0C			mov ebx, [ebp+12] ; ebx - указатель на нулевой элемент массива
  0000004D  D1 E9			shr ecx, 1
  0000004F  73 01			jnc c1
  00000051  41				inc ecx
  00000052			c1:
- 00000052  8B 04 3B			mov eax, [ebx+edi] ; без такой конструкции не работает
- 00000055  D1 E8			shr eax, 1
- 00000057  72 0F			jc c2
+ 00000052  8B 03			mov eax, [ebx] ; eax - данный элемент итерации
+ 00000054  D1 E8			shr eax, 1
+ 00000056  72 0E			jc c2
 
- 00000059  8B 04 3B			mov eax, [ebx+edi]
- 0000005C  FF 05 00000040 R		inc cEl
- 00000062  01 05 00000044 R		add cElSum, eax
- 00000068			c2:
- 00000068  83 C7 08			add edi, 8		; просматриваем элементы массива через один (только четные индексы)
- 0000006B  E2 E5			loop c1
+ 00000058  8B 03			mov eax, [ebx]
+ 0000005A  FF 05 00000040 R		inc cEl
+ 00000060  01 05 00000044 R		add cElSum, eax
+ 00000066			c2:
+ 00000066  83 C3 08			add ebx, 8		; просматриваем элементы массива через один (только четные индексы)
+ 00000069  E2 E7			loop c1
 
- 0000006D  83 3D 00000040 R		cmp cEl, 0		; проверка, не является ли cEl нулем
+ 0000006B  83 3D 00000040 R		cmp cEl, 0		; проверка, не является ли cEl нулем
 	   00
 
- 00000074  75 02			jne c3
- 00000076  74 14			je c4
- 00000078			c3:
- 00000078  A1 00000044 R		mov eax, cElSum
- 0000007D  8B 1D 00000040 R		mov ebx, cEl
- 00000083  99				cdq
- 00000084  F7 FB			idiv ebx
- 00000086  A3 00000000 R		mov result, eax
- 0000008B  C3				ret
- 0000008C			c4:
- 0000008C  C7 05 00000000 R		mov result, 0
+ 00000072  75 02			jne c3
+ 00000074  74 1C			je c4
+ 00000076			c3:
+ 00000076  A1 00000044 R		mov eax, cElSum
+ 0000007B  8B 1D 00000040 R		mov ebx, cEl
+ 00000081  99				cdq
+ 00000082  F7 FB			idiv ebx
+ 00000084  A3 00000000 R		mov result, eax
+ 00000089  5E				pop   esi         ;восстанавливаем используемые регистры
+ 0000008A  5F				pop   edi
+ 0000008B  59				pop   ecx
+ 0000008C  5B				pop   ebx
+ 0000008D  58				pop   eax
+ 0000008E  5D				pop   ebp
+ 0000008F  C2 0008			ret 8
+ 00000092			c4:
+ 00000092  C7 05 00000000 R		mov result, 0
 	   00000000
- 00000096  C3				ret
- 00000097			func endp
+ 0000009C  5E				pop   esi         ;восстанавливаем используемые регистры
+ 0000009D  5F				pop   edi
+ 0000009E  59				pop   ecx
+ 0000009F  5B				pop   ebx
+ 000000A0  58				pop   eax
+ 000000A1  5D				pop   ebp
+ 000000A2  C2 0008			ret 8
+ 000000A5			func endp
 
 				end	lab3  
