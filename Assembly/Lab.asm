@@ -76,29 +76,35 @@ c2:						; поиск минимальной разницы
 	mov esi, 1
 	jmp m2
 m1:
-	cmp eax, [ebp+24]
+	push ecx
+	mov ecx, [ebp+24]
+	cmp eax, [ecx]
+	pop ecx
 	jg c3
 m2:
-	mov [ebp+24], eax	; difX/difY = eax
+	push ecx
+
+	mov ecx, [ebp+24]
+	;mov [ebp+24], eax
+	mov [ecx], eax		; difX/difY = eax
+	mov ecx, [ebp+16]
 	mov eax, [edi]
-	mov [ebp+16], eax	; el1 = [edi]
+	;mov [ebp+16], eax	; el1 = [edi]
+	mov [ecx], eax
+	mov ecx, [ebp+20]
 	mov eax, [ebx]
-	mov [ebp+20], eax	; el2 = [ebx]
+	;mov [ebp+20], eax
+	mov [ecx], eax		; el2 = [ebx]
+
+	pop ecx
 c3:
+	mov eax, ecx
 	add ebx, 4
 	loop c2
 	add edi, 4
 	dec counter
 	jmp c1
 c4:
-
-	mov eax, [ebp+24] ;dif
-	mov eax, [ebp+16] ;el1
-	mov eax, [ebp+20] ;el2
-
-	mov eax, el1X
-	mov eax, el2X
-	mov eax, difX
 
 	pop   esi			; восстанавливаем используемые регистры
 	pop   edi
