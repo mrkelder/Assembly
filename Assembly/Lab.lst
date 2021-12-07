@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.29.30133.0	    12/07/21 12:00:32
+Microsoft (R) Macro Assembler Version 14.29.30133.0	    12/07/21 12:03:03
 Lab.asm							     Page 1 - 1
 
 
@@ -40,89 +40,99 @@ Lab.asm							     Page 1 - 1
  0000000A  68 00000024 R		push offset el1X
  0000000F  FF 35 0000001C R		push nx
  00000015  68 00000000 R		push offset x
- 0000001A  E8 0000000B			call func
+ 0000001A  E8 00000034			call func
 
  0000001F  A1 00000024 R		mov eax, el1X
  00000024  A1 0000002C R		mov eax, el2X
 
- 00000029  C3				ret
+ 00000029  68 00000004 R		push offset difY
+ 0000002E  68 00000030 R		push offset el2Y
+ 00000033  68 00000028 R		push offset el1Y
+ 00000038  FF 35 00000020 R		push ny
+ 0000003E  68 0000000C R		push offset y
+ 00000043  E8 0000000B			call func
 
- 0000002A			func proc
+ 00000048  A1 00000028 R		mov eax, el1Y
+ 0000004D  A1 00000030 R		mov eax, el2Y
+
+ 00000052  C3				ret
+
+ 00000053			func proc
 					; x/y = [ebp+8]
 					; nx/ny = [ebp+12]
 					; el1 = [ebp+16]
 					; el2 = [ebp+20]
 					; difX/difY = [ebp+24]
 
- 0000002A  55				push ebp
- 0000002B  8B EC			mov ebp, esp
- 0000002D  50				push  eax			; сохраняем используемые регистры
- 0000002E  53				push  ebx
- 0000002F  51				push  ecx
- 00000030  57				push  edi
- 00000031  56				push  esi
+ 00000053  55				push ebp
+ 00000054  8B EC			mov ebp, esp
+ 00000056  50				push  eax			; сохраняем используемые регистры
+ 00000057  53				push  ebx
+ 00000058  51				push  ecx
+ 00000059  57				push  edi
+ 0000005A  56				push  esi
 
- 00000032  BE 00000000			mov esi, 0			; флаг того, что минимальная разность была подсчитана
- 00000037  8B 7D 08			mov edi, [ebp+8]
- 0000003A  8B 45 0C			mov eax, [ebp+12]
- 0000003D  A3 00000034 R		mov counter, eax
- 00000042			c1:						; сравнение элемента массива с остальными элементами
- 00000042  83 3D 00000034 R		cmp counter, 0
+ 0000005B  BE 00000000			mov esi, 0			; флаг того, что минимальная разность была подсчитана
+ 00000060  8B 7D 08			mov edi, [ebp+8]
+ 00000063  8B 45 0C			mov eax, [ebp+12]
+ 00000066  A3 00000034 R		mov counter, eax
+ 0000006B			c1:						; сравнение элемента массива с остальными элементами
+ 0000006B  83 3D 00000034 R		cmp counter, 0
 	   00
- 00000049  74 4C			je c4
- 0000004B  8B 07			mov eax, [edi]
+ 00000072  74 4C			je c4
+ 00000074  8B 07			mov eax, [edi]
 
- 0000004D  8B 4D 0C			mov ecx, [ebp+12]	; кол-во повторений
- 00000050  8B 5D 08			mov ebx, [ebp+8]	; ссылка на итерируемый элемент массива
+ 00000076  8B 4D 0C			mov ecx, [ebp+12]	; кол-во повторений
+ 00000079  8B 5D 08			mov ebx, [ebp+8]	; ссылка на итерируемый элемент массива
 
- 00000053			c2:						; поиск минимальной разницы
- 00000053  3B DF			cmp ebx, edi		; проверяем, сравнивается ли элемент сам с собой
- 00000055  74 2E			je c3
+ 0000007C			c2:						; поиск минимальной разницы
+ 0000007C  3B DF			cmp ebx, edi		; проверяем, сравнивается ли элемент сам с собой
+ 0000007E  74 2E			je c3
 
- 00000057  8B 07			mov eax, [edi]
- 00000059  2B 03			sub eax, [ebx]
- 0000005B  83 FE 00			cmp esi, 0
- 0000005E  75 07			jne m1
- 00000060  BE 00000001			mov esi, 1
- 00000065  EB 09			jmp m2
- 00000067			m1:
- 00000067  51				push ecx
- 00000068  8B 4D 18			mov ecx, [ebp+24]
- 0000006B  3B 01			cmp eax, [ecx]
- 0000006D  59				pop ecx
- 0000006E  7F 15			jg c3
- 00000070			m2:
- 00000070  51				push ecx
+ 00000080  8B 07			mov eax, [edi]
+ 00000082  2B 03			sub eax, [ebx]
+ 00000084  83 FE 00			cmp esi, 0
+ 00000087  75 07			jne m1
+ 00000089  BE 00000001			mov esi, 1
+ 0000008E  EB 09			jmp m2
+ 00000090			m1:
+ 00000090  51				push ecx
+ 00000091  8B 4D 18			mov ecx, [ebp+24]
+ 00000094  3B 01			cmp eax, [ecx]
+ 00000096  59				pop ecx
+ 00000097  7F 15			jg c3
+ 00000099			m2:
+ 00000099  51				push ecx
 
- 00000071  8B 4D 18			mov ecx, [ebp+24]
+ 0000009A  8B 4D 18			mov ecx, [ebp+24]
 					;mov [ebp+24], eax
- 00000074  89 01			mov [ecx], eax		; difX/difY = eax
- 00000076  8B 4D 10			mov ecx, [ebp+16]
- 00000079  8B 07			mov eax, [edi]
+ 0000009D  89 01			mov [ecx], eax		; difX/difY = eax
+ 0000009F  8B 4D 10			mov ecx, [ebp+16]
+ 000000A2  8B 07			mov eax, [edi]
 					;mov [ebp+16], eax	; el1 = [edi]
- 0000007B  89 01			mov [ecx], eax
- 0000007D  8B 4D 14			mov ecx, [ebp+20]
- 00000080  8B 03			mov eax, [ebx]
+ 000000A4  89 01			mov [ecx], eax
+ 000000A6  8B 4D 14			mov ecx, [ebp+20]
+ 000000A9  8B 03			mov eax, [ebx]
 					;mov [ebp+20], eax
- 00000082  89 01			mov [ecx], eax		; el2 = [ebx]
+ 000000AB  89 01			mov [ecx], eax		; el2 = [ebx]
 
- 00000084  59				pop ecx
- 00000085			c3:
- 00000085  8B C1			mov eax, ecx
- 00000087  83 C3 04			add ebx, 4
- 0000008A  E2 C7			loop c2
- 0000008C  83 C7 04			add edi, 4
- 0000008F  FF 0D 00000034 R		dec counter
- 00000095  EB AB			jmp c1
- 00000097			c4:
+ 000000AD  59				pop ecx
+ 000000AE			c3:
+ 000000AE  8B C1			mov eax, ecx
+ 000000B0  83 C3 04			add ebx, 4
+ 000000B3  E2 C7			loop c2
+ 000000B5  83 C7 04			add edi, 4
+ 000000B8  FF 0D 00000034 R		dec counter
+ 000000BE  EB AB			jmp c1
+ 000000C0			c4:
 
- 00000097  5E				pop   esi			; восстанавливаем используемые регистры
- 00000098  5F				pop   edi
- 00000099  59				pop   ecx
- 0000009A  5B				pop   ebx
- 0000009B  58				pop   eax
- 0000009C  5D				pop   ebp
- 0000009D  C2 0014			ret 20
- 000000A0			func endp
+ 000000C0  5E				pop   esi			; восстанавливаем используемые регистры
+ 000000C1  5F				pop   edi
+ 000000C2  59				pop   ecx
+ 000000C3  5B				pop   ebx
+ 000000C4  58				pop   eax
+ 000000C5  5D				pop   ebp
+ 000000C6  C2 0014			ret 20
+ 000000C9			func endp
 
 				end	lab3  

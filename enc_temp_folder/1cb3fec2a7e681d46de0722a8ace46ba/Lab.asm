@@ -6,8 +6,10 @@
 .LIST
   
 .DATA
+	;x		dd		2, 1, 2, 4, 2, 5, 1, 7, 3, 9
 	x		dd		1, 2, 3
 	y		dd		228, 3, 8, 5
+	;nx		dd		10
 	nx		dd		3
 	ny		dd		4
 	el1X    dd      0
